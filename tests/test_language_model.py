@@ -4,6 +4,8 @@ import pytest
 import os
 
 
+# TODO add test for unicode chars
+
 class TestLanguageModel:
     @classmethod
     def setup_class(cls):

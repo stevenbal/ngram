@@ -15,20 +15,16 @@ importlib-metadata==0.19  # via pluggy, pytest
 isort==4.3.4
 more-itertools==7.2.0     # via pytest
 nltk==3.4
-numpy==1.18.2             # via pandas
 packaging==19.1           # via pytest
-pandas==1.0.3
 pathspec==0.7.0           # via black
 pluggy==0.12.0            # via pytest
 py==1.8.0                 # via pytest
 pycodestyle==2.5.0        # via autopep8
 pyparsing==2.3.0          # via packaging
 pytest==5.1.1
-python-dateutil==2.8.1    # via pandas
-pytz==2019.3              # via pandas
 regex==2018.1.10          # via black
 singledispatch==3.4.0.3   # via nltk
-six==1.11.0               # via nltk, packaging, python-dateutil, singledispatch
+six==1.11.0               # via nltk, packaging, singledispatch
 toml==0.10.0              # via black
 typed-ast==1.4.1          # via black
 wcwidth==0.1.7            # via pytest

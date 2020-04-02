@@ -12,6 +12,8 @@ from .utils import preprocess_sentence
 
 
 class LanguageModel:
+
+    # TODO provide kwargs for preprocessing
     def __init__(
         self,
         Class,
@@ -102,6 +104,7 @@ class LanguageModel:
         data = pd.read_csv(filename, encoding="ISO-8859-1")
         for index, row in data.iterrows():
             line = row["text"]
+            line = preprocess_sentence(line)
             line = self.apply_modifications(line)
             for j in range(1, N + 1):
                 for i in range(j, len(line) + 1):
@@ -151,15 +154,12 @@ class LanguageModel:
         Output:
         -sentence:      str, the preprocessed sentence
         """
-        sentence = f"<s> {sentence} </s>"
-        if self.stemmer:
-            sentence = " ".join([self.stemmer.stem(word) for word in sentence.split()])
-        if self.words:
-            sentence = sentence.split()
-        # if self.stemmer:
-        #     sentence = [self.stemmer.stem(word) for word in sentence]
         if self.stopwords_english:
-            sentence = [word for word in sentence if word not in self.stopwords_english]
+            sentence = [word for word in sentence.split() if word not in self.stopwords_english]
+        if self.stemmer:
+            sentence = " ".join([self.stemmer.stem(word) for word in sentence])
+        sentence = sentence.split() if self.words else list(sentence)
+        sentence = ["<s>"] + sentence + ["</s>"]
         return sentence
 
     def compute_prob(self, sentence, N=None):

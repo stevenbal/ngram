@@ -2,5 +2,4 @@ autopep8
 black
 isort
 nltk
-pandas
 pytest

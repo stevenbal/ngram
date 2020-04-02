@@ -162,9 +162,9 @@ class LanguageModel:
         -sentence:      str, the preprocessed sentence
         """
         if self.stopwords_english:
-            sentence = [word for word in sentence.split() if word not in self.stopwords_english]
+            sentence = " ".join([word for word in sentence.split() if word not in self.stopwords_english])
         if self.stemmer:
-            sentence = " ".join([self.stemmer.stem(word) for word in sentence])
+            sentence = " ".join([self.stemmer.stem(word) for word in sentence.split()])
         sentence = sentence.split() if self.words else list(sentence)
         sentence = ["<s>"] + sentence + ["</s>"]
         return sentence

@@ -3,6 +3,15 @@ import pytest
 
 
 class TestUtils:
+
+    def test_to_lowercase(self):
+        sentence = """
+        BlA blA
+        """
+        result = preprocess_sentence(sentence)
+
+        assert result == "bla bla"
+
     def test_preprocess_urls(self):
         sentence = """
         http://www.teavcx123ald.nl/test

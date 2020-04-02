@@ -1,8 +1,8 @@
 import os
 import _pickle as pickle
 import re
+import csv
 import math
-import pandas as pd
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from copy import copy
@@ -13,7 +13,7 @@ from .utils import preprocess_sentence
 
 class LanguageModel:
 
-    # TODO provide kwargs for preprocessing
+    # TODO provide kwarg for encoding
     def __init__(
         self,
         Class,
@@ -22,6 +22,7 @@ class LanguageModel:
         words=True,
         stemming=True,
         stopword_removal=False,
+        preprocess_params={},
         model_file="",
     ):
         """
@@ -53,6 +54,7 @@ class LanguageModel:
                 self.stopwords_english = stopwords.words("english")
             else:
                 self.stopwords_english = None
+            self.preprocess_params = preprocess_params
             self.models = self.make_models(source, N)
         elif model_file:
             with open(model_file, "rb") as f:
@@ -61,6 +63,7 @@ class LanguageModel:
                     self.stemmer,
                     self.stopwords_english,
                     self.models,
+                    self.preprocess_params
                 ] = pickle.load(f)
 
     def __repr__(self):
@@ -101,15 +104,19 @@ class LanguageModel:
                         corpus directory
         """
         models = [NestedDict() for _ in range(N)]
-        data = pd.read_csv(filename, encoding="ISO-8859-1")
-        for index, row in data.iterrows():
-            line = row["text"]
-            line = preprocess_sentence(line)
-            line = self.apply_modifications(line)
-            for j in range(1, N + 1):
-                for i in range(j, len(line) + 1):
-                    words = line[i - j : i]
-                    models[j - 1].add_by_path(words, 1)
+        with open(filename, newline="", encoding="utf-8") as csvfile:
+            reader = csv.reader(csvfile)
+            
+            # Skip header
+            next(reader)
+            for row in reader:
+                line = row[0]
+                line = preprocess_sentence(line, **self.preprocess_params)
+                line = self.apply_modifications(line)
+                for j in range(1, N + 1):
+                    for i in range(j, len(line) + 1):
+                        words = line[i - j : i]
+                        models[j - 1].add_by_path(words, 1)
         return models
 
     def get_relative_freq(self, models, words, alpha=1.0):
@@ -176,7 +183,7 @@ class LanguageModel:
         Output:
         -sentence_prob:     float, the log probability of the sentence
         """
-        sentence = preprocess_sentence(sentence)
+        sentence = preprocess_sentence(sentence, **self.preprocess_params)
         sentence = self.apply_modifications(sentence)
         sentence_prob = 1
         if not N:
@@ -218,5 +225,5 @@ class LanguageModel:
         """
         with open(filename, "wb") as f:
             pickle.dump(
-                [self.words, self.stemmer, self.stopwords_english, self.models], f
+                [self.words, self.stemmer, self.stopwords_english, self.models, self.preprocess_params], f
             )

@@ -1,5 +1,0 @@
-autopep8
-black
-isort
-nltk
-pytest
